@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>QURB</title>
+    <script src="axios.min.js"></script>
+    <link rel="stylesheet" href="lib/bootstrap.css"/>
+    <script src="js/index.js"></script>
+    <style>
+        body {
+            margin: 0;
+            height: 85vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #031121;
+            color: white;
+            font-family: Arial, sans-serif;
+            transition: background-color 1s ease;
+        }
+
+        .microphone-button {
+            width: 100px;
+            height: 100px;
+            background-color: #1e1e1e;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            position: relative;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .microphone-button:hover {
+            background-color: #272727;
+        }
+
+        .microphone-button:active {
+            transform: scale(0.95);
+        }
+
+        .microphone-icon {
+            font-size: 50px;
+            color: #ff4bcb;
+            transition: color 0.3s;
+        }
+
+        .microphone-button.active .microphone-icon {
+            color: #4bff78;
+        }
+
+        .close-icon {
+            font-size: 30px;
+            color: #ff4bcb;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: none;
+        }
+
+        .microphone-button:not(.active) .close-icon {
+            display: block;
+        }
+
+        /* Footer stili */
+        footer {
+            width: 100%;
+            text-align: center;
+            background-color: #0f0f0f;
+            color: #fff;
+            font-size: 0.9em;
+            padding: 10px;
+            position: fixed;
+            bottom: 0;
+        }
+
+        footer p {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+<button class="microphone-button"  id="my-button">
+    <span class="microphone-icon">🎤</span>
+    <span class="close-icon" id="close-icon">❌</span>
+</button>
+
+<div class="login_div" id="loginDiv">
+    <div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
+        <div class="card shadow-lg p-4 bg-transparent" style="width: 100%; max-width: 400px; color: white;">
+            <h2 class="text-center mb-4">Login</h2>
+            <form id="loginForm">
+                <!-- Username Input -->
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" class="form-control" id="username" placeholder="Enter your username" required>
+                </div>
+                <!-- Password Input -->
+                <div class="form-group mt-1">
+                    <label for="password">Password</label>
+                    <input type="password" class="form-control" id="password" placeholder="Enter your password" required>
+                </div>
+                <!-- Submit Button -->
+                <button type="submit" class="mt-3 btn btn-primary btn-block" style="width: 100%;">Login</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="status-message"></div>
+
+
+<footer>
+    <p>&copy; 2024 QURB | All Rights Reserved</p>
+</footer>
+
+
+<script>
+    let wakeLock = null;
+
+    // Wake Lock'u etkinleştirme fonksiyonu
+    async function requestWakeLock() {
+        try {
+            wakeLock = await navigator.wakeLock.request("screen");
+            console.log("Wake Lock etkinleştirildi.");
+
+            // Wake Lock serbest bırakıldığında yeniden başlatmak için dinleyici
+            wakeLock.addEventListener("release", () => {
+                console.log("Wake Lock serbest bırakıldı. Yeniden talep ediliyor...");
+                requestWakeLock(); // Serbest bırakıldığında yeniden etkinleştir
+            });
+        } catch (err) {
+            console.error("Wake Lock etkinleştirilemedi:", err);
+        }
+    }
+
+    // Sayfa ilk yüklendiğinde Wake Lock'u etkinleştir
+    if ("wakeLock" in navigator) {
+        requestWakeLock();
+    } else {
+        console.warn("Wake Lock API bu tarayıcıda desteklenmiyor.");
+    }
+
+    // Tarayıcı sekmesi gizlendiğinde veya görünür olduğunda Wake Lock'u kontrol et
+    document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible" && !wakeLock) {
+            console.log("Sekme yeniden görünür oldu. Wake Lock talep ediliyor...");
+            requestWakeLock();
+        }
+    });
+</script>
+
+</body>
+</html>
