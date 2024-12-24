@@ -10,7 +10,6 @@ build/
 coverage/
 
 # Çalışma ortamı dosyaları
-.env
 .env.local
 .env.*.local
 
