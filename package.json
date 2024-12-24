@@ -1,6 +1,10 @@
 {
   "scripts": {
-    "lock": "javascript-obfuscator index.js --output server.js"
+    "lock": "javascript-obfuscator index.js --output server.js",
+    "gen-key": "openssl genpkey -algorithm RSA -out private-key.pem",
+    "gen-csr": "openssl req -new -key private-key.pem -out request.csr -subj \"/C=US/ST=State/L=City/O=Organization/CN=localhost\"",
+    "gen-cert": "openssl x509 -req -in request.csr -signkey private-key.pem -out certificate.pem",
+    "gen-ssl": "npm run gen-key && npm run gen-csr && npm run gen-cert"
   },
   "dependencies": {
     "@mapbox/node-pre-gyp": "1.x",
